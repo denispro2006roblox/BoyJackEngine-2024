@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace BoyJackEngine
 {
@@ -9,8 +8,8 @@ namespace BoyJackEngine
         private bool _isRunning;
         private List<GameObject> _gameObjects;
         private Graphics _graphics; // Объект графики
+        private Input _input;       // Объект ввода
 
-        // Дополнительные данные о состоянии игры
         public int CurrentLevel { get; private set; }
         public int PlayerHealth { get; private set; }
 
@@ -19,15 +18,16 @@ namespace BoyJackEngine
             _isRunning = false;
             _gameObjects = new List<GameObject>();
             _graphics = new Graphics(); // Инициализация графики
+            _input = new Input();       // Инициализация ввода
             CurrentLevel = 1; 
             PlayerHealth = 100; 
         }
 
         public void Initialize()
         {
-            // Загружаем текстуры
-            _graphics.LoadTexture("PlayerTexture.png");
-            _graphics.LoadTexture("EnemyTexture.png");
+            // Загружаем текстуры с соответствующими размерами
+            _graphics.LoadTexture("PlayerTexture.png", 64, 64);
+            _graphics.LoadTexture("EnemyTexture.png", 64, 64);
 
             // Создаем игровые объекты
             CreateGameObjects();
@@ -46,8 +46,17 @@ namespace BoyJackEngine
             _isRunning = true;
             while (_isRunning)
             {
+                // Обновление ввода
+                _input.Update();
+
                 Update(); 
                 Render(); 
+
+                // Проверка нажатия клавиши для выхода
+                if (_input.IsKeyPressed(ConsoleKey.Escape))
+                {
+                    Stop(); // Выходим из игры при нажатии Escape
+                }
             }
         }
 
@@ -58,6 +67,28 @@ namespace BoyJackEngine
                 obj.Update();
             }
 
+            // Пример проверки нажатия клавиш для игрока
+            if (_input.IsKeyDown(ConsoleKey.W))
+            {
+                Console.WriteLine("Moving player up");
+                // Логика перемещения игрока вверх
+            }
+            if (_input.IsKeyDown(ConsoleKey.S))
+            {
+                Console.WriteLine("Moving player down");
+                // Логика перемещения игрока вниз
+            }
+            if (_input.IsKeyDown(ConsoleKey.A))
+            {
+                Console.WriteLine("Moving player left");
+                // Логика перемещения игрока влево
+            }
+            if (_input.IsKeyDown(ConsoleKey.D))
+            {
+                Console.WriteLine("Moving player right");
+                // Логика перемещения игрока вправо
+            }
+
             // Здесь можно сделать логику для изменения уровня или здоровья
         }
 
@@ -66,7 +97,6 @@ namespace BoyJackEngine
             Console.WriteLine("Rendering...");
             foreach (var obj in _gameObjects)
             {
-                // Отрисовка объекта с использованием графики
                 _graphics.DrawTexture(obj.Name == "Player" ? "PlayerTexture.png" : "EnemyTexture.png", obj.PositionX, obj.PositionY);
             }
         }
