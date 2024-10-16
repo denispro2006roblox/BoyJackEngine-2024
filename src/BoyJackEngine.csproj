@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework> <!-- Вы можете установить нужную версию .NET -->
+    <AssemblyName>BoyJackEngine</AssemblyName>
+    <RootNamespace>BoyJackEngine</RootNamespace>
+    <OutputType>Library</OutputType> <!-- Если вы создаете библиотеку для использования в других проектах -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" /> <!-- Пример зависимостей -->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SomeOtherProject\SomeOtherProject.csproj" /> <!-- Ссылка на другой проект, если есть -->
+  </ItemGroup>
+
+</Project>
