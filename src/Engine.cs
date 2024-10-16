@@ -1,44 +1,39 @@
 using System;
-using System.Collections.Generic;
 
 namespace BoyJackEngine
 {
     public class Engine
     {
         private bool _isRunning;
-        private List<GameObject> _gameObjects;
+        private Scene _currentScene; // Текущая сцена
         private Graphics _graphics; // Объект графики
-        private Input _input;       // Объект ввода
-
-        public int CurrentLevel { get; private set; }
-        public int PlayerHealth { get; private set; }
 
         public Engine()
         {
             _isRunning = false;
-            _gameObjects = new List<GameObject>();
             _graphics = new Graphics(); // Инициализация графики
-            _input = new Input();       // Инициализация ввода
-            CurrentLevel = 1; 
-            PlayerHealth = 100; 
+
+            // Пример создания сцены
+            _currentScene = new Scene("MainMenu");
         }
 
         public void Initialize()
         {
-            // Загружаем текстуры с соответствующими размерами
+            // Загружаем текстуры
             _graphics.LoadTexture("PlayerTexture.png", 64, 64);
             _graphics.LoadTexture("EnemyTexture.png", 64, 64);
 
-            // Создаем игровые объекты
-            CreateGameObjects();
+            // Создаем игровые объекты и добавляем их в сцену
+            var player = new GameObject("Player", "PlayerTexture.png", 50, 50);
+            var enemy = new GameObject("Enemy", "EnemyTexture.png", 100, 100);
+
+            _currentScene.AddGameObject(player);
+            _currentScene.AddGameObject(enemy);
+
+            // Инициализируем сцену
+            _currentScene.Initialize();
 
             Console.WriteLine("Engine initialized successfully.");
-        }
-
-        private void CreateGameObjects()
-        {
-            _gameObjects.Add(new GameObject("Player", 50, 50));
-            _gameObjects.Add(new GameObject("Enemy", 100, 100));
         }
 
         public void Run()
@@ -46,59 +41,19 @@ namespace BoyJackEngine
             _isRunning = true;
             while (_isRunning)
             {
-                // Обновление ввода
-                _input.Update();
-
-                Update(); 
-                Render(); 
-
-                // Проверка нажатия клавиши для выхода
-                if (_input.IsKeyPressed(ConsoleKey.Escape))
-                {
-                    Stop(); // Выходим из игры при нажатии Escape
-                }
+                Update();
+                Render();
             }
         }
 
         private void Update()
         {
-            foreach (var obj in _gameObjects)
-            {
-                obj.Update();
-            }
-
-            // Пример проверки нажатия клавиш для игрока
-            if (_input.IsKeyDown(ConsoleKey.W))
-            {
-                Console.WriteLine("Moving player up");
-                // Логика перемещения игрока вверх
-            }
-            if (_input.IsKeyDown(ConsoleKey.S))
-            {
-                Console.WriteLine("Moving player down");
-                // Логика перемещения игрока вниз
-            }
-            if (_input.IsKeyDown(ConsoleKey.A))
-            {
-                Console.WriteLine("Moving player left");
-                // Логика перемещения игрока влево
-            }
-            if (_input.IsKeyDown(ConsoleKey.D))
-            {
-                Console.WriteLine("Moving player right");
-                // Логика перемещения игрока вправо
-            }
-
-            // Здесь можно сделать логику для изменения уровня или здоровья
+            _currentScene.Update();
         }
 
         private void Render()
         {
-            Console.WriteLine("Rendering...");
-            foreach (var obj in _gameObjects)
-            {
-                _graphics.DrawTexture(obj.Name == "Player" ? "PlayerTexture.png" : "EnemyTexture.png", obj.PositionX, obj.PositionY);
-            }
+            _currentScene.Render(_graphics);
         }
 
         public void Stop()
